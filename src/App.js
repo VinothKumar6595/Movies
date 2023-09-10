@@ -19,8 +19,10 @@ function App() {
   //   },
   // ];
   const [movies, setMovies] = useState([]);
+  const [isLoading, setISLoading] = useState(false);
 
   async function fetchMoviesHandler() {
+    setISLoading(true);
     const res = await fetch("https://swapi.dev/api/films/");
     const data = await res.json();
     const transformedObj = data.results.map((movieData) => {
@@ -32,6 +34,7 @@ function App() {
       };
     });
     setMovies(transformedObj);
+    setISLoading(false);
   }
 
   return (
@@ -40,7 +43,8 @@ function App() {
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
       </section>
       <section>
-        <MoviesList movies={movies} />
+        {!isLoading && <MoviesList movies={movies} />}
+        {isLoading && "Empire is Loading..."}
       </section>
     </React.Fragment>
   );
