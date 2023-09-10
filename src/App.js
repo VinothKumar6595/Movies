@@ -1,24 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+
+import MoviesList from "./components/MoviesList";
+import "./App.css";
 
 function App() {
+  // const dummyMovies = [
+  //   {
+  //     id: 1,
+  //     title: 'Some Dummy Movie',
+  //     openingText: 'This is the opening text of the movie',
+  //     releaseDate: '2021-05-18',
+  //   },
+  //   {
+  //     id: 2,
+  //     title: 'Some Dummy Movie 2',
+  //     openingText: 'This is the second opening text of the movie',
+  //     releaseDate: '2021-05-19',
+  //   },
+  // ];
+  const [movies, setMovies] = useState([]);
+
+  async function fetchMoviesHandler() {
+    const res = await fetch("https://swapi.dev/api/films/");
+    const data = await res.json();
+    const transformedObj = data.results.map((movieData) => {
+      return {
+        id: movieData.episode_id,
+        title: movieData.title,
+        openingText: movieData.opening_crawl,
+        releaseDate: movieData.release_date,
+      };
+    });
+    setMovies(transformedObj);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <React.Fragment>
+      <section>
+        <button onClick={fetchMoviesHandler}>Fetch Movies</button>
+      </section>
+      <section>
+        <MoviesList movies={movies} />
+      </section>
+    </React.Fragment>
   );
 }
 
