@@ -1,44 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import MoviesList from "./components/MoviesList";
 import "./App.css";
 
 function App() {
-  // const dummyMovies = [
-  //   {
-  //     id: 1,
-  //     title: 'Some Dummy Movie',
-  //     openingText: 'This is the opening text of the movie',
-  //     releaseDate: '2021-05-18',
-  //   },
-  //   {
-  //     id: 2,
-  //     title: 'Some Dummy Movie 2',
-  //     openingText: 'This is the second opening text of the movie',
-  //     releaseDate: '2021-05-19',
-  //   },
-  // ];
   const [movies, setMovies] = useState([]);
   const [isLoading, setISLoading] = useState(false);
   const [error, setError] = useState(null);
-
   const [retry, setRetry] = useState(false);
 
-  useEffect(() => {
-    const timer = setInterval(() => fetchMoviesHandler(), 5000);
-
-    if (!retry) clearInterval(timer);
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, [retry]);
-
-  const fetchMoviesHandler = async () => {
+  const fetchMoviesHandler = useCallback(async () => {
     setISLoading(true);
     setError(null);
     try {
-      const res = await fetch("https://swapi.dev/api/filmsss/");
+      const res = await fetch("https://swapi.dev/api/films/");
       if (!res.ok) {
         setRetry(true);
         throw new Error("Something Went Wrong! ...Retrying");
@@ -58,8 +33,18 @@ function App() {
       setError(err.message);
     }
     setISLoading(false);
-  };
+  }, []);
 
+  useEffect(() => {
+    fetchMoviesHandler();
+    const timer = setInterval(() => fetchMoviesHandler(), 5000);
+
+    if (!retry) clearInterval(timer);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [fetchMoviesHandler, retry]);
   const cancelRetryHandler = () => {
     setRetry(false);
   };
