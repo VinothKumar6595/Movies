@@ -14,14 +14,28 @@ const AddMovie = () => {
     setDate(event.target.value);
   };
 
-  const addMovieHandler = () => {
-    const myObj = {
+  const addMovieHandler = async (event) => {
+    event.preventDefault();
+    const movies = {
       title: name,
       opening_crawl: text,
       release_date: date,
-      episode_id: Math.random(),
     };
-    console.log(myObj);
+    const response = await fetch(
+      "https://react-http-f39c2-default-rtdb.firebaseio.com/movies.json",
+      {
+        method: "POST",
+        body: JSON.stringify(movies),
+        headers: {
+          "content-Type": "application/json",
+        },
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+    setDate("");
+    setName("");
+    setText("");
   };
 
   return (

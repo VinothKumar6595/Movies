@@ -14,21 +14,35 @@ function App() {
     setISLoading(true);
     setError(null);
     try {
-      const res = await fetch("https://swapi.dev/api/films/");
+      const res = await fetch(
+        "https://react-http-f39c2-default-rtdb.firebaseio.com/movies.json"
+      );
       if (!res.ok) {
         setRetry(true);
         throw new Error("Something Went Wrong! ...Retrying");
       }
       const data = await res.json();
-      const transformedObj = data.results.map((movieData) => {
-        return {
-          id: movieData.episode_id,
-          title: movieData.title,
-          openingText: movieData.opening_crawl,
-          releaseDate: movieData.release_date,
-        };
-      });
-      setMovies(transformedObj);
+      console.log(data);
+      const loadedMovies = [];
+      for (const key in data) {
+        loadedMovies.push({
+          id: key,
+          title: data[key].title,
+          openingText: data[key].opening_crawl,
+          releaseDate: data[key].release_date,
+        });
+      }
+
+      // const transformedObj = data.results.map((movieData) => {
+      //   return {
+      //     id: movieData.episode_id,
+      //     title: movieData.title,
+      //     openingText: movieData.opening_crawl,
+      //     releaseDate: movieData.release_date,
+      //   };
+      // });
+
+      setMovies(loadedMovies);
       setISLoading(false);
     } catch (err) {
       setError(err.message);
@@ -56,7 +70,9 @@ function App() {
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
       </section>
       <section>
-        {!isLoading && <MoviesList movies={movies} />}
+        {!isLoading && (
+          <MoviesList movies={movies} fetchMoviesHandler={fetchMoviesHandler} />
+        )}
         {isLoading && "Empire is Loading..."}
         {!isLoading && error && (
           <p>
